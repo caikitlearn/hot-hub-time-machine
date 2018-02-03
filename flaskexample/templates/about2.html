@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block navbar %}
+	<ul class="nav navbar-nav">
+		<li><a href="./">Home</a></li>
+		<li class="active"><a href="about">About</a></li>
+		<li><a href="slides">Slides</a></li>
+	</ul>
+{% endblock %}
+
+{% block body %}
+	<br></br>
+	<!-- Page Header -->
+
+    <!-- Post Content -->
+    <article>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    <h2 class="section-heading">About Hot Hub Time Machine</h2>
+                    
+                    <p> Hot Hub Time Machine is a data product made to help users plan trips using Hubway. Based on the user's start and end points, the Hot Hub Time Machine will:</p>
+					<ol>
+  						<li>Identify the Hubway station closest to your start point, and the Hubway station closest to your end point.</li>
+  						<li>Output walking directions to your start station, biking directions from start to end station, and walking directions from your end station to end point.</li>
+  						<li>Predict, based on your arrival time to a station, the number of bikes at that station (click the bike icon).</li>
+  						<li>Provide two alternative start and end stations, each with predicted number of bikes (click the bike icons).</li>
+  						<li>Update the page as the user changes start and end points.</li>
+					</ol> 
+					
+					<p> Hot Hub Time Machine is made by <a href="https://www.linkedin.com/in/taicai">Tai Cai</a> for his Insight Data Science project. </p>
+					<p> Please visit <a href="https://github.com/taicaistat"> my GitHub </a> for the source code. </p>
+					<p> Please email <a href="mailto:taicaistat@gmail.com">taicaistat@gmail.com</a> for questions and feedback. </p>
+                    <h2 class="section-heading">About Insight Data Science</h2>
+                    
+                    <p> From their <a href="http://xyz.insightdatascience.com/Insight_Data_Science_White_Paper.pdf">white paper</a>: Insight is an intensive, seven week postdoctoral training fellowship that bridges the gap between academia and a career in data science. Based in Silicon Valley, New York City, Boston, Seattle, as well as a growing network across the country, the program enables scientists to learn the industry specific skills needed to work in the growing field of big data at leading companies.</p>
+
+                </div>
+            </div>
+        </div>
+    </article>
+
+
+{% endblock %}

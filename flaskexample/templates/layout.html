@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="icon" href="../../favicon.ico">
+	
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		
+		<title>Hot Hub Time Machine</title>
+	
+		<script 
+			src="https://code.jquery.com/jquery-3.2.1.js"
+			integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+			crossorigin="anonymous">
+		</script>
+		
+
+		<style>
+			/* Always set the map height explicitly to define the size of the div
+			* element that contains the map. */
+			#map {height: 70%;}
+			
+			/* Optional: Makes the sample page fill the window. */
+			html, body {height: 100%; margin: 0; padding: 0;}
+			
+			body { 
+    			padding-top: 2%; 
+			}
+			
+			.controls {
+				margin-top: 50px;
+				border: 1px solid transparent;
+				border-radius: 2px 0 0 2px;
+				box-sizing: border-box;
+				-moz-box-sizing: border-box;
+				height: 32px;
+				outline: none;
+				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+			}
+			
+			.bigHr {
+				background-color: dimgrey !important;
+				color: black !important;
+				border: solid 2px dimgrey !important;
+				height: 5px !important;
+			}
+			
+			#origin-input,
+			#destination-input {background-color: #fff; font-family: Roboto; font-size: 15px; font-weight: 300; margin-left: 12px; padding: 0 11px 0 13px; text-overflow: ellipsis;	width: 200px;}
+			#origin-input:focus,
+			#destination-input:focus {border-color: #4d90fe;}
+
+			#mode-selector {color: #fff; background-color: #4d90fe; margin-left: 12px; padding: 5px 11px 0px 11px;}
+			#mode-selector label {font-family: Roboto; font-size: 13px; font-weight: 300;}
+  
+			#right-panel {font-family: 'Roboto','sans-serif'; line-height: 30px; padding-left: 10px;}
+			#right-panel select, #right-panel input {font-size: 15px;}
+			#right-panel select {width: 100%;}
+			#right-panel i {font-size: 12px;}	
+			#right-panel {height: 50%;	float: right; width: 34%; overflow: auto; margin-top: 0%;}
+			
+			#right-panel2 {font-family: 'Roboto','sans-serif'; line-height: 30px; padding-left: 10px;}
+			#right-panel2 select, #right-panel2 input {font-size: 15px;}
+			#right-panel2 select {width: 100%;}
+			#right-panel2 i {font-size: 12px;}	
+			#right-panel2 {height: 50%;	float: right; width: 33%; overflow: auto; margin-top: 0%;}
+			
+			#right-panel3 {font-family: 'Roboto','sans-serif'; line-height: 30px; padding-left: 10px;}
+			#right-panel3 select, #right-panel3 input {font-size: 15px;}
+			#right-panel3 select {width: 100%;}
+			#right-panel3 i {font-size: 12px;}	
+			#right-panel3 {height: 50%;	float: right; width: 33%; overflow: auto; margin-top: 0%;}
+
+			@media print {
+				#map {height: 500px; margin: 0;}
+				#right-panel {float: none; width: auto;}
+				#right-panel2 {float: none; width: auto;}
+				#right-panel3 {float: none; width: auto;}
+			}
+		</style>
+	
+	</head>
+	
+	<body style="background-color:#D4EFDF;">
+		
+		<!-- Fixed navbar -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="./">Hot Hub Time Machine</a>
+				</div>
+				<div id="navbar" class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+					{% block navbar %}{% endblock %}
+					</ul>
+				</div><!--/.nav-collapse -->
+			</div>
+		</nav>
+
+		{% block body %}{% endblock %}
+
+	    <!--
+	    <div id="footer">
+    	{% block footer %}
+      		&copy; Copyright 2010 by <a href="http://domain.invalid/">you</a>.
+      	{% endblock %}
+    	</div>
+    	-->
+	</body>
+</html>

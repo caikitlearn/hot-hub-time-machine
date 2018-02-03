@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+	
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    
+	<title>Hot Hub Time Machine</title>
+	
+	<script 
+		src="https://code.jquery.com/jquery-3.2.1.js"
+		integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
+		crossorigin="anonymous">
+	</script>
+
+	<style>
+		/* Always set the map height explicitly to define the size of the div
+		* element that contains the map. */
+		#map {height: 80%;}
+	
+		/* Optional: Makes the sample page fill the window. */
+		html, body {height: 100%; margin: 0; padding: 0;}
+	
+		.controls {
+			margin-top: 50px;
+			border: 1px solid transparent;
+			border-radius: 2px 0 0 2px;
+			box-sizing: border-box;
+			-moz-box-sizing: border-box;
+			height: 32px;
+			outline: none;
+			box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+		}
+		
+		#origin-input,
+		#destination-input {
+			background-color: #fff;
+			font-family: Roboto;
+			font-size: 15px;
+			font-weight: 300;
+			margin-left: 12px;
+			padding: 0 11px 0 13px;
+			text-overflow: ellipsis;
+			width: 200px;
+		}
+		#origin-input:focus,
+		#destination-input:focus {border-color: #4d90fe;}
+
+		#mode-selector {
+			color: #fff;
+			background-color: #4d90fe;
+			margin-left: 12px;
+			padding: 5px 11px 0px 11px;
+		}
+		#mode-selector label {font-family: Roboto; font-size: 13px; font-weight: 300;}
+  
+		#right-panel {font-family: 'Roboto','sans-serif'; line-height: 30px; padding-left: 10px;}
+		#right-panel select, #right-panel input {font-size: 15px;}
+		#right-panel select {width: 100%;}
+		#right-panel i {font-size: 12px;}
+	
+		#right-panel {
+			height: 100%;
+			float: right;
+			width: 390px;
+			overflow: auto;
+			margin-top: 5%;
+		}
+
+		@media print {
+			#map {height: 500px; margin: 0;}
+			#right-panel {float: none; width: auto;}
+		}
+	</style>
+	
+</head>
+
+<body>
+	
+	<!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">Hot Hub Time Machine</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="about">About</a></li>
+            <li><a href="slides">Slides</a></li>
+            <li><a href="contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    
+    <input id="origin-input" class="controls" type="text"
+    	placeholder="Origin location">
+
+    <input id="destination-input" class="controls" type="text"
+        placeholder="Destination location">
+        
+    <div id="right-panel"></div>
+    <div id="map"></div>
+
+    <script>
+    	// This example requires the Places library. Include the libraries=places
+      	// parameter when you first load the API. For example:
+      	// <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDI1tQyI4NkA-8AD9idSOGjIokrU2bbtxc&libraries=places">
+      	var pointA=null;
+      	var pointB=null;
+      	// var toPython= new Array(pointA,pointB);
+      	function initMap() {
+        	var map = new google.maps.Map(document.getElementById('map'), {
+          		mapTypeControl: false,
+          		center: {lat: 42.3601, lng: -71.0589},
+          		zoom: 13
+        	});
+        	new AutocompleteDirectionsHandler(map);
+      	} // initMap
+
+       	/**
+        	* @constructor
+       	*/
+      	function AutocompleteDirectionsHandler(map) {
+
+        	this.map = map;
+        	this.originPlaceId = null;
+        	this.destinationPlaceId = null;
+			this.travelMode = 'WALKING';
+			var originInput = document.getElementById('origin-input');
+			var destinationInput = document.getElementById('destination-input');
+
+			var modeSelector = document.getElementById('mode-selector');
+			this.directionsService = new google.maps.DirectionsService;
+			// this.directionsDisplay = new google.maps.DirectionsRenderer;
+			// this.directionsDisplay.setMap(map);
+			// this.directionsDisplay.setPanel(document.getElementById('right-panel'));
+
+        	var originAutocomplete = new google.maps.places.Autocomplete(
+            	originInput, {placeIdOnly: true});
+        	var destinationAutocomplete = new google.maps.places.Autocomplete(
+            	destinationInput, {placeIdOnly: true});
+        	this.bounds = new google.maps.LatLngBounds();
+        
+			this.directionsDisplay1 = new google.maps.DirectionsRenderer({
+				map: map,
+				preserveViewport: true,
+				suppressMarkers: true,
+				polylineOptions: {strokeColor: 'blue'}
+			});
+			this.directionsDisplay1.setMap(map);
+			// this.directionsDisplay1.setOptions({suppressMarkers:true});
+			this.directionsDisplay1.setPanel(document.getElementById('right-panel'));
+
+			this.directionsDisplay2 = new google.maps.DirectionsRenderer({
+				map: map,
+				preserveViewport: true,
+				suppressMarkers: true,
+				suppressBicyclingLayer: true,
+				polylineOptions: {strokeColor: 'green'}
+			});
+			this.directionsDisplay2.setMap(map);
+			// this.directionsDisplay2.setOptions({suppressMarkers:true});
+			this.directionsDisplay2.setPanel(document.getElementById('right-panel'));
+
+			this.directionsDisplay3 = new google.maps.DirectionsRenderer({
+				map: map,
+				preserveViewport: true,
+				suppressMarkers: true,
+				polylineOptions: {strokeColor: 'blue'}
+			});
+			this.directionsDisplay3.setMap(map);
+			// this.directionsDisplay3.setOptions({suppressMarkers:true});
+			this.directionsDisplay3.setPanel(document.getElementById('right-panel'));
+        
+			marker = new google.maps.Marker({
+				map:map,
+				// draggable:true,
+				// animation: google.maps.Animation.DROP,
+				//position: new google.maps.LatLng(42.3467, -71.0972),
+				//icon: 'http://maps.google.com/mapfiles/kml/shapes/cycling.png'
+			}); 
+
+			// this.setupClickListener('changemode-walking', 'WALKING');
+			// this.setupClickListener('changemode-transit', 'TRANSIT');
+			// this.setupClickListener('changemode-driving', 'DRIVING');
+
+			this.setupPlaceChangedListener(originAutocomplete, 'ORIG');
+			this.setupPlaceChangedListener(destinationAutocomplete, 'DEST');
+
+			this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(originInput);
+			this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(destinationInput);
+			// this.map.controls[google.maps.ControlPosition.TOP_LEFT].push(modeSelector);
+		} // AutocompleteDirectionsHandler
+
+	// input error checking
+	AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener = function(autocomplete, mode) {
+    	var me = this;
+
+        autocomplete.bindTo('bounds', this.map);
+        autocomplete.addListener('place_changed', function() {
+        	var place = autocomplete.getPlace();       
+        	if (!place.place_id) {
+        		window.alert("Please select an option from the dropdown list.");
+            	return;
+        	}
+        	if (mode === 'ORIG') {
+        		me.originPlaceId = place.place_id;
+            	// window.alert(place.name);
+            	pointA=place.name;
+            	// toPython[0]=pointA;
+            	// window.alert(toPython);
+            	// window.alert(result);
+          	} else {
+            	me.destinationPlaceId = place.place_id;
+            	// window.alert(place.name);
+            	pointB=place.name;
+            	// toPython[1]=pointB;
+            	// window.alert(toPython);
+            	// window.alert(result);
+        	}
+        	
+			$.getJSON('/background_process', {
+				// send python the autocompleted start and end points
+				toPython: pointA.concat("AANNDD",pointB),
+			}, function(data) {
+				// python returns data
+				// information about the two nearest stations and approximate waiting times
+				$("#b1").text(data.b1)
+		 		$("#b2").text(data.b2)
+				// $("#stat1lat").text(data.stat1lat)
+				// $("#stat1lng").text(data.stat1lng)
+				// $("#stat2lat").text(data.stat2lat)
+				// $("#stat2lng").text(data.stat2lng);
+				// console.log(JSON.stringify(data.pr1));
+				// window.alert(JSON.stringify(data.stat1lat));
+				// window.alert(JSON.stringify(data.stat2lng));				
+				// window.alert(JSON.parse(data));
+				// console.log(me);
+				// hublat1=42.333031,hublng1=-71.116700,hublat2=42.358500,hublng2=-71.098708
+				// plot the map/directions
+				me.route(JSON.stringify(data.stat1lat),
+						 JSON.stringify(data.stat1lng),
+					 	 JSON.stringify(data.stat2lat),
+					 	 JSON.stringify(data.stat2lng));
+			});
+        }); // autocomplete.addListener('place_changed', function()
+	}; //AutocompleteDirectionsHandler.prototype.setupPlaceChangedListener
+
+	// plotting the trip route
+	AutocompleteDirectionsHandler.prototype.route = function(hublat1,hublng1,hublat2,hublng2) {
+    	if (!this.originPlaceId || !this.destinationPlaceId) {return;}
+	
+        var me = this;
+       	var markerArray = [];
+       	var stepDisplay = new google.maps.InfoWindow;
+
+        this.directionsService.route({
+        	origin: {'placeId': this.originPlaceId},
+          	destination: new google.maps.LatLng(hublat1,hublng1),
+          	// destination: new google.maps.LatLng(stat1lat,stat1lng),
+          	travelMode: 'WALKING'
+        }, function(response, status) {
+			if (status === 'OK') {
+				me.directionsDisplay1.setDirections(response);
+				// showSteps(response, markerArray, stepDisplay, me);
+				me.map.fitBounds(me.bounds.union(response.routes[0].bounds));
+			} else {
+				window.alert('Directions request failed due to ' + status);
+			}
+        }); // this.directionsService.route
+        
+        this.directionsService.route({
+          	origin: new google.maps.LatLng(hublat1,hublng1),
+          	destination: new google.maps.LatLng(hublat2,hublng2),
+          	travelMode: 'BICYCLING'
+        }, function(response, status) {
+			if (status === 'OK') {
+				me.directionsDisplay2.setDirections(response);
+				me.map.fitBounds(me.bounds.union(response.routes[0].bounds));
+			} else {
+				window.alert('Directions request failed due to ' + status);
+			}
+        }); // this.directionsService.route
+
+        this.directionsService.route({
+          	origin: new google.maps.LatLng(hublat2,hublng2),
+          	destination: {'placeId': this.destinationPlaceId},
+          	travelMode: 'WALKING'
+        }, function(response, status) {
+			if (status === 'OK') {
+				me.directionsDisplay3.setDirections(response);
+				me.map.fitBounds(me.bounds.union(response.routes[0].bounds));
+			} else {
+				window.alert('Directions request failed due to ' + status);
+			}
+        }); // this.directionsService.route
+		
+		/*
+		function showSteps(directionResult, markerArray, stepDisplay, map) {
+       		var myRoute = directionResult.routes[0].legs[0];
+       		for (var i = 0; i < myRoute.steps.length; i++) {
+          		var marker = markerArray[i] = markerArray[i] || new google.maps.Marker;
+          		marker.setMap(map);
+          		marker.setPosition(myRoute.steps[i].start_location);
+          		attachInstructionText(
+              	stepDisplay, marker, myRoute.steps[i].instructions, map);
+        	}
+       	}        
+		*/
+      }; // AutocompleteDirectionsHandler.prototype.route
+
+    </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDI1tQyI4NkA-8AD9idSOGjIokrU2bbtxc&libraries=geometry,places&callback=initMap"
+	    async defer></script>
+	
+	<br></br>
+	<p id=b1></p>
+	<p id=b2></p>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	
+</body>
+
+</html>

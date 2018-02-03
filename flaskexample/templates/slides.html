@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block navbar %}
+	<ul class="nav navbar-nav">
+		<li><a href="./">Home</a></li>
+		<li><a href="about">About</a></li>
+		<li class="active"><a href="slides">Slides</a></li>
+	</ul>
+{% endblock %}
+
+{% block body %}
+	<iframe src="https://docs.google.com/presentation/d/1JB8gwZEAKHIqI0ocMeh6ljE9cz7bp5_piHQdRZqbHMg/embed?start=false&loop=false&delayms=3000" frameborder="0" width="100%" height="100%" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+{% endblock %}
